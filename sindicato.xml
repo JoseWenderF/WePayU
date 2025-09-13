@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="21.0.7" class="java.beans.XMLDecoder">
+ <object class="java.util.ArrayList">
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.menbroSindicato">
+    <void property="idEmpregado">
+     <int>1</int>
+    </void>
+    <void property="idMembro">
+     <string>s128</string>
+    </void>
+    <void property="listaServicos">
+     <object class="java.util.ArrayList">
+      <void method="add">
+       <object class="br.ufal.ic.p2.wepayu.models.servicoSindicato">
+        <void property="data">
+         <object class="java.time.LocalDate" method="of">
+          <int>2005</int>
+          <int>1</int>
+          <int>1</int>
+         </object>
+        </void>
+        <void property="valor">
+         <double>80.0</double>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="br.ufal.ic.p2.wepayu.models.servicoSindicato">
+        <void property="data">
+         <object class="java.time.LocalDate" method="of">
+          <int>2005</int>
+          <int>1</int>
+          <int>2</int>
+         </object>
+        </void>
+        <void property="valor">
+         <double>85.5</double>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="br.ufal.ic.p2.wepayu.models.servicoSindicato">
+        <void property="data">
+         <object class="java.time.LocalDate" method="of">
+          <int>2005</int>
+          <int>1</int>
+          <int>3</int>
+         </object>
+        </void>
+        <void property="valor">
+         <double>90.0</double>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="br.ufal.ic.p2.wepayu.models.servicoSindicato">
+        <void property="data">
+         <object class="java.time.LocalDate" method="of">
+          <int>2005</int>
+          <int>1</int>
+          <int>4</int>
+         </object>
+        </void>
+        <void property="valor">
+         <double>60.0</double>
+        </void>
+       </object>
+      </void>
+     </object>
+    </void>
+    <void property="taxa">
+     <double>1.0</double>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.menbroSindicato">
+    <void property="idEmpregado">
+     <int>2</int>
+    </void>
+    <void property="idMembro">
+     <string>s129</string>
+    </void>
+    <void property="listaServicos">
+     <object class="java.util.ArrayList">
+      <void method="add">
+       <object class="br.ufal.ic.p2.wepayu.models.servicoSindicato">
+        <void property="data">
+         <object class="java.time.LocalDate" method="of">
+          <int>2005</int>
+          <int>1</int>
+          <int>3</int>
+         </object>
+        </void>
+        <void property="valor">
+         <double>100.0</double>
+        </void>
+       </object>
+      </void>
+     </object>
+    </void>
+    <void property="taxa">
+     <double>1.0</double>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.menbroSindicato">
+    <void property="idEmpregado">
+     <int>3</int>
+    </void>
+    <void property="idMembro">
+     <string>s130</string>
+    </void>
+    <void property="listaServicos">
+     <object class="java.util.ArrayList"/>
+    </void>
+    <void property="taxa">
+     <double>1.0</double>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

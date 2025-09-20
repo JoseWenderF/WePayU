@@ -79,7 +79,7 @@ expectError "Empregado nao eh sindicalizado." getAtributoEmpregado emp=${id1} at
 # serie de alteracoes
 alteraEmpregado emp=${id1} atributo=nome valor="Joao da Silva"
 alteraEmpregado emp=${id1} atributo=endereco valor="Rua dos Jooes, 333 - Campina Grande"
-alteraEmpregado emp=${id1} atributo=tipo valor  =horista salario=23
+alteraEmpregado emp=${id1} atributo=tipo valor=horista salario=23
 alteraEmpregado emp=${id1} atributo=metodoPagamento valor=emMaos
 alteraEmpregado emp=${id1} atributo=sindicalizado valor=false
 

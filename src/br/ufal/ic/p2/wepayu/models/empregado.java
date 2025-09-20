@@ -9,6 +9,9 @@ public abstract class empregado {
     private boolean sindicalizado;
     private String metodoPagamento;
     private String idSindicato;
+    private String banco;
+    private String agencia;
+    private String contaCorrente;
 
 
 
@@ -22,6 +25,9 @@ public abstract class empregado {
         this.metodoPagamento = "emMaos";
         this.sindicalizado = false;
         this.idSindicato = "";
+        this.banco = "";
+        this.agencia = "";
+        this.contaCorrente = "";
     }
 
     public String getIdSindicato() {return idSindicato;}
@@ -43,6 +49,20 @@ public abstract class empregado {
     public boolean getSindicalizado (){return this.sindicalizado;}
 
     public int getId() {return id;}
+
+    public boolean isSindicalizado() {return sindicalizado;}
+
+    public String getBanco() {return banco;}
+
+    public void setBanco(String banco) {this.banco = banco;}
+
+    public String getAgencia() {return agencia;}
+
+    public void setAgencia(String agencia) {this.agencia = agencia;}
+
+    public String getContaCorrente() {return contaCorrente;}
+
+    public void setContaCorrente(String contaCorrente) {this.contaCorrente = contaCorrente;}
 
     public void setEndereco(String endereco) { this.endereco = endereco;}
 

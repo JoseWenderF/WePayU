@@ -126,6 +126,38 @@ public class bancoEmpregados {
         }
     }
 
+    public String getMetodoPagamento(int id){
+        empregado emp = getEmp(id);
+        return emp.getMetodoPagamento();
+    }
+
+    public String getBanco(int id) throws EmpregadoNaoRecebeBancoException {
+        empregado emp = getEmp(id);
+        if(!emp.getMetodoPagamento().equals("banco")){
+            throw new EmpregadoNaoRecebeBancoException();
+        }else{
+            return emp.getBanco();
+        }
+    }
+
+    public String getAgencia(int id) throws EmpregadoNaoRecebeBancoException {
+        empregado emp = getEmp(id);
+        if(!emp.getMetodoPagamento().equals("banco")){
+            throw new EmpregadoNaoRecebeBancoException();
+        }else{
+            return emp.getAgencia();
+        }
+    }
+
+    public String getContaCorrente(int id) throws EmpregadoNaoRecebeBancoException {
+        empregado emp = getEmp(id);
+        if(!emp.getMetodoPagamento().equals("banco")){
+            throw new EmpregadoNaoRecebeBancoException();
+        }else{
+            return emp.getContaCorrente();
+        }
+    }
+
     public void lancaCartao(int id, LocalDate data, double horas) throws HorasNaoPositivasException, EmpregadoNaoHoristaException {
         if (horas <= 0.0){
             throw new HorasNaoPositivasException();
@@ -248,6 +280,141 @@ public class bancoEmpregados {
             emp.setSindicalizado(false);
             emp.setIdSindicato("");
         }
+    }
+
+    public void alteraEmpregadoMetodoPagamento(int id, String atributo, String valor, String banco, String agencia, String contaCorrente) throws AtributoNaoExisteException, ValorNuloException {
+        empregado emp = getEmp(id);
+
+        if (!atributo.equals("metodoPagamento")){
+            throw new AtributoNaoExisteException();
+        }
+        if (!valor.equals("banco")){
+            throw new ValorNuloException();
+        }
+
+        emp.setMetodoPagamento(valor);
+        emp.setBanco(banco);
+        emp.setAgencia(agencia);
+        emp.setContaCorrente(contaCorrente);
+    }
+
+    public void alteraEmpregadoMetodoPagamento(int id, String metodo){
+        empregado emp = getEmp(id);
+        emp.setMetodoPagamento(metodo);
+    }
+
+    public void alterarEmpregadoComissao(int id, double valor) throws EmpregadoNaoComissionadoException {
+        empregado emp = getEmp(id);
+        if(!(emp instanceof empregadoComissionado)){
+            throw new EmpregadoNaoComissionadoException();
+        }
+        ((empregadoComissionado) emp).setComissao(valor);
+    }
+
+    public void alterarEmpregadoNome(int id, String nome) {
+        empregado emp = getEmp(id);
+        emp.setNome(nome);
+    }
+
+    public void alterarEmpregadoEndereco(int id, String endereco) {
+        empregado emp = getEmp(id);
+        emp.setEndereco(endereco);
+    }
+
+    public void alterarEmpregadoSalario(int id, double salario){
+        empregado emp = getEmp(id);
+        emp.setSalario(salario);
+    }
+
+    public void alterarEmpregadoTipoParaAssalariado(int id){
+        empregado emp = getEmp(id);
+
+        String nome = emp.getNome();
+        String endereco = emp.getEndereco();
+        double salario = emp.getSalario();
+        boolean sindicalizado = emp.getSindicalizado();
+        String metodoPagamento = emp.getMetodoPagamento();
+        String idSindicato = emp.getIdSindicato();
+        String banco = emp.getBanco();
+        String agencia = emp.getAgencia();
+        String contaCorrente = emp.getContaCorrente();
+
+        empregadoAssalariado empAss  = new empregadoAssalariado();
+
+        empAss.setId(id);
+        empAss.setNome(nome);
+        empAss.setEndereco(endereco);
+        empAss.setSalario(salario);
+        empAss.setSindicalizado(sindicalizado);
+        empAss.setMetodoPagamento(metodoPagamento);
+        empAss.setIdSindicato(idSindicato);
+        empAss.setBanco(banco);
+        empAss.setAgencia(agencia);
+        empAss.setContaCorrente(contaCorrente);
+
+        listaEmpregados.remove(emp);
+        listaEmpregados.add(empAss);
+    }
+
+    public void alterarEmpregadoTipoParaComissionado(int id, double comissao){
+        empregado emp = getEmp(id);
+
+        String nome = emp.getNome();
+        String endereco = emp.getEndereco();
+        double salario = emp.getSalario();
+        boolean sindicalizado = emp.getSindicalizado();
+        String metodoPagamento = emp.getMetodoPagamento();
+        String idSindicato = emp.getIdSindicato();
+        String banco = emp.getBanco();
+        String agencia = emp.getAgencia();
+        String contaCorrente = emp.getContaCorrente();
+
+        empregadoComissionado empCom  = new empregadoComissionado();
+
+        empCom.setId(id);
+        empCom.setNome(nome);
+        empCom.setEndereco(endereco);
+        empCom.setSalario(salario);
+        empCom.setSindicalizado(sindicalizado);
+        empCom.setMetodoPagamento(metodoPagamento);
+        empCom.setIdSindicato(idSindicato);
+        empCom.setBanco(banco);
+        empCom.setAgencia(agencia);
+        empCom.setContaCorrente(contaCorrente);
+        empCom.setComissao(comissao);
+
+        listaEmpregados.remove(emp);
+        listaEmpregados.add(empCom);
+    }
+
+    public void alterarEmpregadoTipoParaHorista(int id, double salario){
+        empregado emp = getEmp(id);
+
+        String nome = emp.getNome();
+        String endereco = emp.getEndereco();
+        boolean sindicalizado = emp.getSindicalizado();
+        String metodoPagamento = emp.getMetodoPagamento();
+        String idSindicato = emp.getIdSindicato();
+        String banco = emp.getBanco();
+        String agencia = emp.getAgencia();
+        String contaCorrente = emp.getContaCorrente();
+
+        empregadoHorista empHor  = new empregadoHorista();
+
+        empHor.setId(id);
+        empHor.setNome(nome);
+        empHor.setEndereco(endereco);
+        empHor.setSalario(salario);
+        empHor.setSindicalizado(sindicalizado);
+        empHor.setMetodoPagamento(metodoPagamento);
+        empHor.setIdSindicato(idSindicato);
+        empHor.setBanco(banco);
+        empHor.setAgencia(agencia);
+        empHor.setContaCorrente(contaCorrente);
+        empHor.setSalario(salario);
+
+        listaEmpregados.remove(emp);
+        listaEmpregados.add(empHor);
     }
 
     public void removerSindicatoEmpregado(int id){

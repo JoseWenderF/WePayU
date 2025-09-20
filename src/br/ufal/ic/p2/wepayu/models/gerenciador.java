@@ -2,17 +2,12 @@ package br.ufal.ic.p2.wepayu.models;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import br.ufal.ic.p2.wepayu.Exception.*;
-import javax.swing.*;
+
 import java.math.BigDecimal;
 
 
-import java.beans.XMLEncoder;
-import java.beans.XMLDecoder;
-import java.io.*;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CompletionException;
 
 public class gerenciador {
     bancoEmpregados banco;
@@ -119,7 +114,7 @@ public class gerenciador {
     }
 
     public String getAtributoEmpregad(String id, String atributo) throws AtributoNaoExisteException, EmpregadoNaoExisteException, IdEmpregadoNuloException,
-            EmpregadoNaoComissionadoException{
+            EmpregadoNaoComissionadoException, EmpregadoNaoRecebeBancoException, EmpregadoNaoSindicalizadoException {
         int idInt = convercaoId(id);
 
         if (banco.getEmp(idInt) == null){
@@ -144,6 +139,26 @@ public class gerenciador {
         } else if (atributo.equals("comissao")){
             return String.format("%.2f", banco.getComissao(idInt)).replace(".", ",");
 
+        }else if(atributo.equals("metodoPagamento")){
+            return banco.getMetodoPagamento(idInt);
+        }else if(atributo.equals("banco")){
+            return banco.getBanco(idInt);
+        }else if(atributo.equals("agencia")){
+            return banco.getAgencia(idInt);
+        }else if(atributo.equals("contaCorrente")){
+            return banco.getContaCorrente(idInt);
+        }else if(atributo.equals("idSindicato")){
+            empregado emp = banco.getEmp(idInt);
+            if (!emp.getSindicalizado()){
+                throw new EmpregadoNaoSindicalizadoException();
+            }
+            return sindicato.getIdSindicato(idInt);
+        }else if(atributo.equals("taxaSindical")){
+            empregado emp = banco.getEmp(idInt);
+            if (!emp.getSindicalizado()){
+                throw new EmpregadoNaoSindicalizadoException();
+            }
+            return String.format("%.2f", sindicato.getTaxa(idInt)).replace(".", ",");
         }else {
             throw new AtributoNaoExisteException();
         }
@@ -307,7 +322,7 @@ public class gerenciador {
         return String.format("%d", banco.getEmpregadoPorNome(nome, indiceInt));
     }
 
-    public void alteraEmpregado(String idEmpregado, String atributo, String valor, String idMembro, String taxa) throws IdEmpregadoNuloException, EmpregadoNaoExisteException, AtributoNaoExisteException, ValorNuloException, ValorNaoNumericoException, MembroJaExisteException {
+    public void alteraEmpregado(String idEmpregado, String atributo, String valor, String idMembro, String taxa) throws IdEmpregadoNuloException, EmpregadoNaoExisteException, AtributoNaoExisteException, ValorNuloException, ValorNaoNumericoException, MembroJaExisteException, IdMembroNuloException, TaxaSindicatoNuloException, TaxaSindicatoNaoNumericaException, TaxaSindicatoNegativoException, IdSindicatoNuloException {
         int idInt = convercaoId(idEmpregado);
 
         if (banco.getEmp(idInt) == null){
@@ -318,7 +333,18 @@ public class gerenciador {
             throw new AtributoNaoExisteException();
         }
 
-        double taxaDoube = stringForDouble(taxa);
+        double taxaDoube;
+        try {
+            taxaDoube = stringForDouble(taxa);
+        }catch (ValorNuloException e){
+            throw new TaxaSindicatoNuloException();
+        }catch (ValorNaoNumericoException e){
+            throw new TaxaSindicatoNaoNumericaException();
+        }
+
+        if (taxaDoube < 0){
+            throw new TaxaSindicatoNegativoException();
+        }
 
         boolean valorBoolean;
         if (valor.equals("true")){
@@ -327,16 +353,128 @@ public class gerenciador {
             valorBoolean = false;
         }
 
+        if(idMembro.isBlank()){
+            throw new IdSindicatoNuloException();
+        }
+
         banco.alteraEmpregadoSindicato(idInt, valorBoolean, idMembro);
 
         sindicato.criarMembro(idInt, idMembro, taxaDoube);
     }
 
-    public void alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException {
+    public void alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException, EmpregadoNaoComissionadoException, AtributoNaoExisteException, NomeNuloException, EnderecoNuloException, TipoInvalidoException, SalarioNuloException, SalarioNaoNumericoException, SalarioNegativoException, ComissaoNulaException, ComissaoNaoNumericaException, ComissaoNegativaException, MetodoPagamentoInvalidoException, ValorNaoBooleanException {
         int idInt = convercaoId(idEmpregado);
 
-        banco.removerSindicatoEmpregado(idInt);
-        sindicato.removerMembro(idInt);
+        if (atributo.equals("sindicalizado")){
+            if (!valor.equals("true") && !valor.equals("false")){
+                throw new ValorNaoBooleanException();
+            }
+            banco.removerSindicatoEmpregado(idInt);
+            sindicato.removerMembro(idInt);
+        }else if(atributo.equals("comissao")){
+            if (valor.isBlank()){
+                throw new ComissaoNulaException();
+            }
+
+            double valorDouble;
+            try {
+                valorDouble = stringForDouble(valor);
+            } catch (Exception e) {
+                throw new ComissaoNaoNumericaException();
+            }
+
+            if(valorDouble < 0){
+                throw new ComissaoNegativaException();
+            }
+
+            banco.alterarEmpregadoComissao(idInt, valorDouble);
+        }else if(atributo.equals("nome")){
+            if (valor.isBlank()){
+                throw new NomeNuloException();
+            }
+            banco.alterarEmpregadoNome(idInt, valor);
+        }else if (atributo.equals("endereco")){
+            if (valor.isBlank()){
+                throw new EnderecoNuloException();
+            }
+            banco.alterarEmpregadoEndereco(idInt, valor);
+        }else if(atributo.equals("tipo")){
+            if (!valor.equals("assalariado")){
+                throw new TipoInvalidoException();
+            }
+            banco.alterarEmpregadoTipoParaAssalariado(idInt);
+        }else if(atributo.equals("salario")){
+            if (valor.isBlank()){
+                throw new SalarioNuloException();
+            }
+
+            double valorDouble;
+            try {
+                valorDouble = stringForDouble(valor);
+            } catch (Exception e) {
+                throw new SalarioNaoNumericoException();
+            }
+
+            if(valorDouble < 0){
+                throw new SalarioNegativoException();
+            }
+            banco.alterarEmpregadoSalario(idInt, valorDouble);
+        }else if (atributo.equals("metodoPagamento")){
+            if (!valor.equals("emMaos") && !valor.equals("correios")){
+                throw new MetodoPagamentoInvalidoException();
+            }
+
+            banco.alteraEmpregadoMetodoPagamento(idInt, valor);
+        }else{
+            throw new AtributoNaoExisteException();
+        }
+    }
+
+    public void alteraEmpregado(String id, String atributo, String valor, String at_banco, String agencia, String contaCorrente) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, AtributoNaoExisteException, ValorNuloException, BancoNuloException, AgenciaNuloException, ContaCorrenteNuloException {
+        int idInt = convercaoId(id);
+
+        if (banco.getEmp(idInt) == null){
+            throw new EmpregadoNaoExisteException();
+        }
+
+        if(!atributo.equals("metodoPagamento")){
+            throw new AtributoNaoExisteException();
+        }
+
+        if(!valor.equals("banco")){
+            throw new AtributoNaoExisteException();
+        }
+
+        if(at_banco.isBlank()){
+            throw new BancoNuloException();
+        }
+
+        if(agencia.isBlank()){
+            throw new AgenciaNuloException();
+        }
+
+        if(contaCorrente.isBlank()){
+            throw new ContaCorrenteNuloException();
+        }
+
+        banco.alteraEmpregadoMetodoPagamento(idInt, atributo, valor, at_banco, agencia, contaCorrente);
+    }
+
+    public void alteraEmpregado(String id, String atributo, String valor1, String valor2) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException {
+        int idInt = convercaoId(id);
+
+        if (banco.getEmp(idInt) == null){
+            throw new EmpregadoNaoExisteException();
+        }
+
+        if (atributo.equals("tipo")){
+            double sal_ou_com = stringForDouble(valor2);
+            if(valor1.equals("horista")){
+                banco.alterarEmpregadoTipoParaHorista(idInt, sal_ou_com);
+            }else if(valor1.equals("comissionado")){
+                banco.alterarEmpregadoTipoParaComissionado(idInt, sal_ou_com);
+            }
+        }
     }
 
     public void lancaTaxaServico(String idMembro, String data, String valor) throws DataInvalidaException, ValorNuloException, ValorNaoNumericoException, ValorNegativoException, IdMembroNuloException, MembroNaoExisteException {
@@ -451,6 +589,8 @@ public class gerenciador {
 
         return data;
     }
+
+
 
     public void zerarSistema() {
         banco.zerarSistema();

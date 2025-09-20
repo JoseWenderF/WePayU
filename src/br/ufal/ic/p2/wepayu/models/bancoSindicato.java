@@ -95,5 +95,14 @@ public class bancoSindicato {
         return total;
     }
 
+    public String getIdSindicato(int idEmpregado){
+        menbroSindicato mem = getMembroPorIdEmpregado(idEmpregado);
+        return mem.idMembro;
+    }
+
+    public double getTaxa(int idEpregado){
+        menbroSindicato mem = getMembroPorIdEmpregado(idEpregado);
+        return mem.getTaxa();
+    }
 
 }

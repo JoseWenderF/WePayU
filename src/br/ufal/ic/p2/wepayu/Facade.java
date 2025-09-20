@@ -19,7 +19,7 @@ public class Facade {
         return gerente.criarEmpregado(nome, endereco, tipo, salario, comissao);
     }
 
-    public String getAtributoEmpregado(String id, String atributo) throws AtributoNaoExisteException, EmpregadoNaoExisteException, IdEmpregadoNuloException, EmpregadoNaoComissionadoException {
+    public String getAtributoEmpregado(String id, String atributo) throws AtributoNaoExisteException, EmpregadoNaoExisteException, IdEmpregadoNuloException, EmpregadoNaoComissionadoException, EmpregadoNaoRecebeBancoException, EmpregadoNaoSindicalizadoException {
         return gerente.getAtributoEmpregad(id, atributo);
     }
 
@@ -51,12 +51,20 @@ public class Facade {
         return gerente.getEmpregadoPorNome(nome, indice);
     }
 
-    public void alteraEmpregado(String idEmpregado, String atributo, String valor, String idMembro, String taxa) throws ValorNuloException, EmpregadoNaoExisteException, AtributoNaoExisteException, IdEmpregadoNuloException, ValorNaoNumericoException, MembroJaExisteException {
+    public void alteraEmpregado(String idEmpregado, String atributo, String valor, String idMembro, String taxa) throws ValorNuloException, EmpregadoNaoExisteException, AtributoNaoExisteException, IdEmpregadoNuloException, ValorNaoNumericoException, MembroJaExisteException, TaxaSindicatoNaoNumericaException, TaxaSindicatoNuloException, TaxaSindicatoNegativoException, IdMembroNuloException, IdSindicatoNuloException {
         gerente.alteraEmpregado(idEmpregado, atributo, valor, idMembro, taxa);
     }
 
-    public void  alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException {
+    public void alteraEmpregado(String id, String atributo, String valor, String at_banco, String agencia, String contaCorrente) throws ValorNuloException, EmpregadoNaoExisteException, AtributoNaoExisteException, IdEmpregadoNuloException, BancoNuloException, AgenciaNuloException, ContaCorrenteNuloException {
+        gerente.alteraEmpregado(id, atributo, valor, at_banco, agencia, contaCorrente);
+    }
+
+    public void  alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException, EmpregadoNaoComissionadoException, AtributoNaoExisteException, NomeNuloException, EnderecoNuloException, TipoInvalidoException, SalarioNuloException, SalarioNaoNumericoException, SalarioNegativoException, ComissaoNulaException, ComissaoNaoNumericaException, ComissaoNegativaException, MetodoPagamentoInvalidoException, ValorNaoBooleanException {
         gerente.alteraEmpregado(idEmpregado, atributo, valor);
+    }
+
+    public void alteraEmpregado(String id, String atributo, String valor1, String valor2) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException{
+        gerente.alteraEmpregado(id, atributo, valor1, valor2);
     }
 
     public void lancaTaxaServico(String idMembro, String data, String valor) throws ValorNuloException, ValorNegativoException, ValorNaoNumericoException, DataInvalidaException, IdMembroNuloException, MembroNaoExisteException {

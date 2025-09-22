@@ -12,10 +12,12 @@ import java.util.concurrent.CompletionException;
 public class gerenciador {
     bancoEmpregados banco;
     bancoSindicato sindicato;
+    recursosHumanos rh;
 
     public gerenciador(){
         banco = new bancoEmpregados();
         sindicato = new bancoSindicato();
+        rh = new recursosHumanos(banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos());
     }
 
     public bancoEmpregados getBanco(){return this.banco;}
@@ -590,7 +592,14 @@ public class gerenciador {
         return data;
     }
 
+public String totalFolha(String data_str) throws DataInvalidaException {
+        //System.out.println(banco.getListaEmpregados().size());
+        //System.out.println(sindicato.getListaMebrosSindicatos().size());
 
+        LocalDate data = conversaoData(data_str);
+
+        return String.format("%.2f", rh.totalFolha(data, banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos()));
+}
 
     public void zerarSistema() {
         banco.zerarSistema();

@@ -1,6 +1,8 @@
 package br.ufal.ic.p2.wepayu.models;
 
 
+import java.time.LocalDate;
+
 public abstract class empregado {
     private String nome;
     private String endereco;
@@ -12,6 +14,7 @@ public abstract class empregado {
     private String banco;
     private String agencia;
     private String contaCorrente;
+    private LocalDate dataContratacao;
 
 
 
@@ -77,4 +80,13 @@ public abstract class empregado {
     public void setId(int id) {this.id = id;}
 
     public void setIdSindicato(String idSindicato) {this.idSindicato = idSindicato;}
+
+    public LocalDate getDataContratacao() {return dataContratacao;}
+
+    public void setDataContratacao(LocalDate dataContratacao) {this.dataContratacao = dataContratacao;}
+
+    @Override
+    public String toString() {
+        return String.format("Id:" + this.id + " Nome: " + this.nome);
+    }
 }

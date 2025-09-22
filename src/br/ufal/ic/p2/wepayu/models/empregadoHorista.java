@@ -10,6 +10,7 @@ public class empregadoHorista extends empregado{
     public empregadoHorista(String nome, String endereco, double salario, int id)  {
         super(nome, endereco, salario, id);
         this.listaPontos = new ArrayList<>();
+        this.setDataContratacao(null);
     }
 
     public void addcartaoPontos(cartaoPontos novoCartao){

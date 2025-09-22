@@ -38,7 +38,7 @@ public class bancoEmpregados {
     public int getUltimooId(){return this.ultimooId;}
     public void setUltimooId(int ultimooId){this.ultimooId = ultimooId;}
 
-    public List<empregado> getListaEmpregados(){return this.listaEmpregados;}
+    public ArrayList<empregado> getListaEmpregados(){return this.listaEmpregados;}
     public void setListaEmpregados(ArrayList<empregado> listaEmpregados){this.listaEmpregados = listaEmpregados;}
 
     public int addEmpregado(String nome, String endereco, String tipo, double salario)  {
@@ -167,6 +167,9 @@ public class bancoEmpregados {
         empregado emp = getEmp(id);
         if (emp instanceof empregadoHorista){
             empregadoHorista emphor = (empregadoHorista) emp;
+            if (emphor.getDataContratacao() == null){
+                emphor.setDataContratacao(data);
+            }
             emphor.addcartaoPontos(cartao);
         }else{
             throw new EmpregadoNaoHoristaException();
@@ -338,6 +341,7 @@ public class bancoEmpregados {
         String banco = emp.getBanco();
         String agencia = emp.getAgencia();
         String contaCorrente = emp.getContaCorrente();
+        LocalDate dataContratacao = emp.getDataContratacao();
 
         empregadoAssalariado empAss  = new empregadoAssalariado();
 
@@ -351,6 +355,7 @@ public class bancoEmpregados {
         empAss.setBanco(banco);
         empAss.setAgencia(agencia);
         empAss.setContaCorrente(contaCorrente);
+        empAss.setDataContratacao(dataContratacao);
 
         listaEmpregados.remove(emp);
         listaEmpregados.add(empAss);
@@ -368,6 +373,7 @@ public class bancoEmpregados {
         String banco = emp.getBanco();
         String agencia = emp.getAgencia();
         String contaCorrente = emp.getContaCorrente();
+        LocalDate dataContratacao = emp.getDataContratacao();
 
         empregadoComissionado empCom  = new empregadoComissionado();
 
@@ -382,6 +388,7 @@ public class bancoEmpregados {
         empCom.setAgencia(agencia);
         empCom.setContaCorrente(contaCorrente);
         empCom.setComissao(comissao);
+        empCom.setDataContratacao(dataContratacao);
 
         listaEmpregados.remove(emp);
         listaEmpregados.add(empCom);
@@ -398,6 +405,7 @@ public class bancoEmpregados {
         String banco = emp.getBanco();
         String agencia = emp.getAgencia();
         String contaCorrente = emp.getContaCorrente();
+        LocalDate dataContratacao = emp.getDataContratacao();
 
         empregadoHorista empHor  = new empregadoHorista();
 
@@ -412,6 +420,7 @@ public class bancoEmpregados {
         empHor.setAgencia(agencia);
         empHor.setContaCorrente(contaCorrente);
         empHor.setSalario(salario);
+        empHor.setDataContratacao(dataContratacao);
 
         listaEmpregados.remove(emp);
         listaEmpregados.add(empHor);

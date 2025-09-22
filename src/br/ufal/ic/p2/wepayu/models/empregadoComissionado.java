@@ -1,6 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class empregadoComissionado extends empregado{
@@ -12,6 +13,8 @@ public class empregadoComissionado extends empregado{
         super(nome, endereco, salario, id);
         this.comissao = comissao;
         listaVendas = new ArrayList<>();
+        LocalDate dataContratacao = LocalDate.of(2005,1, 1);
+        this.setDataContratacao(dataContratacao);
     }
 
     public double getComissao() {return comissao;}

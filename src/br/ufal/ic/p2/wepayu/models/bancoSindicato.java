@@ -105,4 +105,11 @@ public class bancoSindicato {
         return mem.getTaxa();
     }
 
+    public ArrayList<menbroSindicato> getListaMebrosSindicatos() {
+        return listaMebrosSindicatos;
+    }
+
+    public void setListaMebrosSindicatos(ArrayList<menbroSindicato> listaMebrosSindicatos) {
+        this.listaMebrosSindicatos = listaMebrosSindicatos;
+    }
 }

@@ -75,6 +75,10 @@ public class Facade {
         return gerente.getTaxasServico(idEmpregado, dataInicial, dataFinal);
     }
 
+    public String totalFolha(String data) throws DataInvalidaException {
+        return gerente.totalFolha(data);
+    }
+
     public void zerarSistema(){
         gerente.zerarSistema();
     }

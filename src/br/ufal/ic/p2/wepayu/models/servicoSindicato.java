@@ -1,8 +1,9 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class servicoSindicato {
+public class servicoSindicato implements Serializable {
     LocalDate data;
     double valor;
 

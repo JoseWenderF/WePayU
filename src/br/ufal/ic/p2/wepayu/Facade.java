@@ -11,6 +11,10 @@ public class Facade {
         this.gerente = new gerenciador();
     }
 
+    public String getNumeroDeEmpregados(){
+        return gerente.getNumeroEmpregados();
+    }
+
     public String criarEmpregado(String nome, String endereco, String tipo, String salario) throws SalarioNaoNumericoException, NomeNuloException, EnderecoNuloException, TipoNaoAplicavelException, TipoInvalidoException, SalarioNegativoException, SalarioNuloException {
         return gerente.criarEmpregado(nome, endereco, tipo, salario);
     }
@@ -59,7 +63,7 @@ public class Facade {
         gerente.alteraEmpregado(id, atributo, valor, at_banco, agencia, contaCorrente);
     }
 
-    public void  alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException, EmpregadoNaoComissionadoException, AtributoNaoExisteException, NomeNuloException, EnderecoNuloException, TipoInvalidoException, SalarioNuloException, SalarioNaoNumericoException, SalarioNegativoException, ComissaoNulaException, ComissaoNaoNumericaException, ComissaoNegativaException, MetodoPagamentoInvalidoException, ValorNaoBooleanException {
+    public void  alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException, EmpregadoNaoComissionadoException, AtributoNaoExisteException, NomeNuloException, EnderecoNuloException, TipoInvalidoException, SalarioNuloException, SalarioNaoNumericoException, SalarioNegativoException, ComissaoNulaException, ComissaoNaoNumericaException, ComissaoNegativaException, MetodoPagamentoInvalidoException, ValorNaoBooleanException, AgendaDePagamentoNaoDisponivelException {
         gerente.alteraEmpregado(idEmpregado, atributo, valor);
     }
 
@@ -79,6 +83,10 @@ public class Facade {
         return gerente.totalFolha(data);
     }
 
+    public void rodaFolha(String nomeArquivo, String data) throws DataInvalidaException {
+        gerente.rodarFolha(nomeArquivo, data);
+    }
+
     public void zerarSistema(){
         gerente.zerarSistema();
     }
@@ -86,5 +94,9 @@ public class Facade {
     public void encerrarSistema(){
         gerente.encerrarSistema();
     }
+
+    public void undo() throws NaoHaComandosParaDesfazerException, ComandoAposEncerrarSistemaException {gerente.undo();}
+
+    public void redo() throws ComandoAposEncerrarSistemaException {gerente.redo();}
 
 }

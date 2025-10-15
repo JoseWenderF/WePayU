@@ -1,10 +1,11 @@
 package br.ufal.ic.p2.wepayu.models;
 
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class empregadoComissionado extends empregado{
+public class empregadoComissionado extends empregado implements Serializable {
     private double comissao;
     private ArrayList<registroVenda> listaVendas;
 
@@ -15,6 +16,8 @@ public class empregadoComissionado extends empregado{
         listaVendas = new ArrayList<>();
         LocalDate dataContratacao = LocalDate.of(2005,1, 1);
         this.setDataContratacao(dataContratacao);
+        agendaDePagamento agenda = new agendaDePagamento("semanal", "2", "5");
+        this.setAgendaPagamento(agenda);
     }
 
     public double getComissao() {return comissao;}

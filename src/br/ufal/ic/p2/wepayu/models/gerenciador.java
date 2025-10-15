@@ -7,21 +7,34 @@ import java.math.BigDecimal;
 
 
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.CompletionException;
 
 public class gerenciador {
     bancoEmpregados banco;
     bancoSindicato sindicato;
     recursosHumanos rh;
+    Stack<estado> pilha_undo;
+    Stack<estado> pilha_redo;
+    boolean estadoSistema;
 
     public gerenciador(){
         banco = new bancoEmpregados();
         sindicato = new bancoSindicato();
-        rh = new recursosHumanos(banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos());
+        rh = new recursosHumanos(banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos(), sindicato);
+        this.pilha_undo = new Stack<>();
+        this.pilha_redo = new Stack<>();
+        estadoSistema = true;
     }
 
     public bancoEmpregados getBanco(){return this.banco;}
     public void setBanco(bancoEmpregados banco){this.banco = banco;}
+
+    public String getNumeroEmpregados(){
+        return String.format("%d", banco.getNumeroEmpregados());
+    }
 
     private void validacaoDados(String nome, String endereco, String salario, String tipo)throws EnderecoNuloException, NomeNuloException,
             SalarioNaoNumericoException, SalarioNegativoException, SalarioNuloException, TipoInvalidoException{
@@ -58,6 +71,8 @@ public class gerenciador {
     public String criarEmpregado(String nome, String endereco, String tipo, String salario, String comissao) throws ComissaoNaoNumericaException,
             ComissaoNegativaException, ComissaoNulaException, EnderecoNuloException, NomeNuloException, SalarioNaoNumericoException,
             SalarioNegativoException, SalarioNuloException, TipoNaoAplicavelException, TipoInvalidoException{
+
+        this.criar_undo();
 
         if (comissao.isEmpty() || comissao == null || comissao.isBlank()){
             throw new ComissaoNulaException();
@@ -97,6 +112,8 @@ public class gerenciador {
 
     public String criarEmpregado(String nome, String endereco, String tipo, String salario) throws EnderecoNuloException, NomeNuloException, SalarioNaoNumericoException,
             SalarioNegativoException, SalarioNuloException, TipoNaoAplicavelException, TipoInvalidoException{
+
+        this.criar_undo();
 
         String formatSalario = salario.replace(",", ".");
 
@@ -161,7 +178,14 @@ public class gerenciador {
                 throw new EmpregadoNaoSindicalizadoException();
             }
             return String.format("%.2f", sindicato.getTaxa(idInt)).replace(".", ",");
-        }else {
+        } else if (atributo.equals("agendaPagamento")) {
+            agendaDePagamento agenda = banco.getAgendaDePagamento(idInt);
+            if (agenda.getV2() == null){
+                return String.format(agenda.getTipo() + " " + agenda.getV1());
+            }else {
+                return String.format(agenda.getTipo() + " " + agenda.getV1() + " " + agenda.getV2());
+            }
+        } else {
             throw new AtributoNaoExisteException();
         }
 
@@ -169,6 +193,9 @@ public class gerenciador {
 
 
     public void removerEmpregado(String id) throws IdEmpregadoNuloException, EmpregadoNaoExisteException {
+
+        this.criar_undo();
+
         int idInt = convercaoId(id);
 
         if (banco.getEmp(idInt) == null){
@@ -179,6 +206,8 @@ public class gerenciador {
     }
 
     public void lancaCartao(String id, String data, String horas) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, HorasNulasExcepetion, HorasNaoNumericasException, HorasNaoPositivasException, DataInvalidaException, EmpregadoNaoHoristaException {
+        this.criar_undo();
+
         int idInt = convercaoId(id);
 
         if (banco.getEmp(idInt) == null){
@@ -286,7 +315,15 @@ public class gerenciador {
             throw new DataInvalidaException();
         }
 
-        banco.lancaVenda(idInt, dataEmData, valorDouble);
+        this.criar_undo();
+
+        try {
+            banco.lancaVenda(idInt, dataEmData, valorDouble);
+        }catch (Exception e){
+            pilha_undo.pop();
+            throw e;
+        }
+
     }
 
     public String getVendasRealizadas(String id, String dataInicial, String dataFinal) throws IdEmpregadoNuloException, EmpregadoNaoExisteException, DataInicialInvalidaException, DataFinalInvalidaException, EmpregadoNaoComissionadoException, DataInicialPosteriorFinalException {
@@ -325,6 +362,8 @@ public class gerenciador {
     }
 
     public void alteraEmpregado(String idEmpregado, String atributo, String valor, String idMembro, String taxa) throws IdEmpregadoNuloException, EmpregadoNaoExisteException, AtributoNaoExisteException, ValorNuloException, ValorNaoNumericoException, MembroJaExisteException, IdMembroNuloException, TaxaSindicatoNuloException, TaxaSindicatoNaoNumericaException, TaxaSindicatoNegativoException, IdSindicatoNuloException {
+        this.criar_undo();
+
         int idInt = convercaoId(idEmpregado);
 
         if (banco.getEmp(idInt) == null){
@@ -364,7 +403,9 @@ public class gerenciador {
         sindicato.criarMembro(idInt, idMembro, taxaDoube);
     }
 
-    public void alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException, EmpregadoNaoComissionadoException, AtributoNaoExisteException, NomeNuloException, EnderecoNuloException, TipoInvalidoException, SalarioNuloException, SalarioNaoNumericoException, SalarioNegativoException, ComissaoNulaException, ComissaoNaoNumericaException, ComissaoNegativaException, MetodoPagamentoInvalidoException, ValorNaoBooleanException {
+    public void alteraEmpregado(String idEmpregado, String atributo, String valor) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException, EmpregadoNaoComissionadoException, AtributoNaoExisteException, NomeNuloException, EnderecoNuloException, TipoInvalidoException, SalarioNuloException, SalarioNaoNumericoException, SalarioNegativoException, ComissaoNulaException, ComissaoNaoNumericaException, ComissaoNegativaException, MetodoPagamentoInvalidoException, ValorNaoBooleanException, AgendaDePagamentoNaoDisponivelException {
+        this.criar_undo();
+
         int idInt = convercaoId(idEmpregado);
 
         if (atributo.equals("sindicalizado")){
@@ -427,12 +468,34 @@ public class gerenciador {
             }
 
             banco.alteraEmpregadoMetodoPagamento(idInt, valor);
-        }else{
+        } else if (atributo.equals("agendaPagamento")) {
+            String[] palavras = valor.split(" ");
+            agendaDePagamento cont;
+
+            if (palavras.length < 2 || palavras.length > 3){
+                throw new AgendaDePagamentoNaoDisponivelException();
+            }
+
+            if (palavras.length == 2){
+                cont = rh.verificarSeAgendaPagamentoExiste(palavras[0], palavras[1], null);
+            }else {
+                cont = rh.verificarSeAgendaPagamentoExiste(palavras[0], palavras[1], palavras[2]);
+            }
+
+            if (cont == null){
+                throw new AgendaDePagamentoNaoDisponivelException();
+            }
+
+            banco.alterarEmpregadoAgendaDePagamento(idInt, cont);
+
+        } else{
             throw new AtributoNaoExisteException();
         }
     }
 
     public void alteraEmpregado(String id, String atributo, String valor, String at_banco, String agencia, String contaCorrente) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, AtributoNaoExisteException, ValorNuloException, BancoNuloException, AgenciaNuloException, ContaCorrenteNuloException {
+        this.criar_undo();
+
         int idInt = convercaoId(id);
 
         if (banco.getEmp(idInt) == null){
@@ -463,6 +526,8 @@ public class gerenciador {
     }
 
     public void alteraEmpregado(String id, String atributo, String valor1, String valor2) throws EmpregadoNaoExisteException, IdEmpregadoNuloException, ValorNuloException, ValorNaoNumericoException {
+        this.criar_undo();
+
         int idInt = convercaoId(id);
 
         if (banco.getEmp(idInt) == null){
@@ -480,6 +545,8 @@ public class gerenciador {
     }
 
     public void lancaTaxaServico(String idMembro, String data, String valor) throws DataInvalidaException, ValorNuloException, ValorNaoNumericoException, ValorNegativoException, IdMembroNuloException, MembroNaoExisteException {
+        this.criar_undo();
+
         if (idMembro.isEmpty()){
             throw new IdMembroNuloException();
         }
@@ -592,16 +659,23 @@ public class gerenciador {
         return data;
     }
 
-public String totalFolha(String data_str) throws DataInvalidaException {
-        //System.out.println(banco.getListaEmpregados().size());
-        //System.out.println(sindicato.getListaMebrosSindicatos().size());
+    public String totalFolha(String data_str) throws DataInvalidaException {
+            //System.out.println(banco.getListaEmpregados().size());
+            //System.out.println(sindicato.getListaMebrosSindicatos().size());
 
+            LocalDate data = conversaoData(data_str);
+
+            return String.format("%.2f", rh.totalFolha(data, banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos()));
+    }
+
+    public void rodarFolha(String data_str, String nomeArquivo) throws DataInvalidaException {
+        this.criar_undo();
         LocalDate data = conversaoData(data_str);
-
-        return String.format("%.2f", rh.totalFolha(data, banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos()));
-}
+        rh.rodarFolhaNovo(nomeArquivo, data, banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos());
+    }
 
     public void zerarSistema() {
+        criar_undo();
         banco.zerarSistema();
         sindicato.zerarSistema();
     }
@@ -609,5 +683,43 @@ public String totalFolha(String data_str) throws DataInvalidaException {
     public void encerrarSistema() {
         banco.encerrarSistema();
         sindicato.encerrarSistema();
+        pilha_undo.clear();
+        pilha_redo.clear();
+        estadoSistema = false;
     }
+
+    public void undo() throws NaoHaComandosParaDesfazerException, ComandoAposEncerrarSistemaException {
+        if (!this.estadoSistema){
+            throw new ComandoAposEncerrarSistemaException();
+        }
+        if (pilha_undo.size() == 0){
+            throw new NaoHaComandosParaDesfazerException();
+        }
+        estado atual = new estado(banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos(), rh.listaAgendasDePagamento);
+        pilha_redo.push(atual);
+        estado anterior = pilha_undo.pop();
+        banco.setListaEmpregados(anterior.getCopiaEmpregados());
+        sindicato.setListaMebrosSindicatos(anterior.getCopiaMembrosSindicato());
+        rh.setListaAgendasDePagamento(anterior.getCopiaAgendasDePagamentos());
+    }
+
+    public void redo() throws ComandoAposEncerrarSistemaException {
+        if (!this.estadoSistema){
+            throw new ComandoAposEncerrarSistemaException();
+        }
+        estado atual = new estado(banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos(), rh.listaAgendasDePagamento);
+        pilha_undo.push(atual);
+        estado anterior = pilha_redo.pop();
+        banco.setListaEmpregados(anterior.getCopiaEmpregados());
+        sindicato.setListaMebrosSindicatos(anterior.getCopiaMembrosSindicato());
+        rh.setListaAgendasDePagamento(anterior.getCopiaAgendasDePagamentos());
+    }
+
+    public void criar_undo(){
+        estado atual = new estado(banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos(), rh.listaAgendasDePagamento);
+        pilha_undo.push(atual);
+        this.pilha_redo.clear();
+        //System.out.println(pilha_undo.size());
+    }
+
 }

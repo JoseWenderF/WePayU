@@ -1,8 +1,9 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class menbroSindicato {
+public class menbroSindicato implements Serializable {
     int idEmpregado;
     String idMembro;
     ArrayList<servicoSindicato> listaServicos;

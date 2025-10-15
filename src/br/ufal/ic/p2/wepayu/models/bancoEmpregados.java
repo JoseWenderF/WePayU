@@ -41,6 +41,10 @@ public class bancoEmpregados {
     public ArrayList<empregado> getListaEmpregados(){return this.listaEmpregados;}
     public void setListaEmpregados(ArrayList<empregado> listaEmpregados){this.listaEmpregados = listaEmpregados;}
 
+    public int getNumeroEmpregados(){
+        return listaEmpregados.size();
+    }
+
     public int addEmpregado(String nome, String endereco, String tipo, double salario)  {
         this.ultimooId++;
         empregado novo = null;
@@ -156,6 +160,11 @@ public class bancoEmpregados {
         }else{
             return emp.getContaCorrente();
         }
+    }
+
+    public agendaDePagamento getAgendaDePagamento(int id){
+        empregado emp = getEmp(id);
+        return emp.getAgendaPagamento();
     }
 
     public void lancaCartao(int id, LocalDate data, double horas) throws HorasNaoPositivasException, EmpregadoNaoHoristaException {
@@ -424,6 +433,11 @@ public class bancoEmpregados {
 
         listaEmpregados.remove(emp);
         listaEmpregados.add(empHor);
+    }
+
+    public void alterarEmpregadoAgendaDePagamento(int id, agendaDePagamento agenda){
+        empregado emp = getEmp(id);
+        emp.setAgendaPagamento(agenda);
     }
 
     public void removerSindicatoEmpregado(int id){

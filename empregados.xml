@@ -2,27 +2,37 @@
 <java version="21.0.8" class="java.beans.XMLDecoder">
  <object class="java.util.ArrayList">
   <void method="add">
-   <object class="br.ufal.ic.p2.wepayu.models.empregadoComissionado">
+   <object class="br.ufal.ic.p2.wepayu.models.empregadoHorista">
     <void property="agencia">
-     <string>1591-1</string>
+     <string></string>
+    </void>
+    <void property="agendaPagamento">
+     <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
+      <void property="tipo">
+       <string>semanal</string>
+      </void>
+      <void property="v1">
+       <string>5</string>
+      </void>
+     </object>
     </void>
     <void property="banco">
-     <string>Banco do Brasil</string>
-    </void>
-    <void property="comissao">
-     <double>0.02</double>
+     <string></string>
     </void>
     <void property="contaCorrente">
-     <string>51000-0</string>
+     <string></string>
     </void>
     <void property="endereco">
      <string>Rua dos Jooes, 333 - Campina Grande</string>
     </void>
     <void property="id">
-     <int>1</int>
+     <int>6</int>
     </void>
     <void property="idSindicato">
      <string></string>
+    </void>
+    <void property="listaPontos">
+     <object class="java.util.ArrayList"/>
     </void>
     <void property="metodoPagamento">
      <string>emMaos</string>

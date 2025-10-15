@@ -1,8 +1,9 @@
 package br.ufal.ic.p2.wepayu.models;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class cartaoPontos {
+public class cartaoPontos implements Serializable {
     double horasNormais;
     double horasExtra;
     LocalDate data;

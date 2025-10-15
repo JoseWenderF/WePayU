@@ -1,9 +1,10 @@
 package br.ufal.ic.p2.wepayu.models;
 
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class empregado {
+public abstract class empregado implements Serializable {
     private String nome;
     private String endereco;
     private double salario;
@@ -15,6 +16,7 @@ public abstract class empregado {
     private String agencia;
     private String contaCorrente;
     private LocalDate dataContratacao;
+    private agendaDePagamento agendaPagamento;
 
 
 
@@ -84,6 +86,10 @@ public abstract class empregado {
     public LocalDate getDataContratacao() {return dataContratacao;}
 
     public void setDataContratacao(LocalDate dataContratacao) {this.dataContratacao = dataContratacao;}
+
+    public agendaDePagamento getAgendaPagamento() {return agendaPagamento;}
+
+    public void setAgendaPagamento(agendaDePagamento agendaPagamento) {this.agendaPagamento = agendaPagamento;}
 
     @Override
     public String toString() {

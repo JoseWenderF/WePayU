@@ -1,5 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import br.ufal.ic.p2.wepayu.Exception.DescricaoDeAgendaIncalidaException;
+
 import javax.swing.*;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -61,7 +63,7 @@ public class recursosHumanos {
     }
 
     public void encerrarSistema(){
-        try (XMLEncoder encoder = new XMLEncoder(new FileOutputStream("sindicato.xml"))) {
+        try (XMLEncoder encoder = new XMLEncoder(new FileOutputStream("recursos_humanos.xml"))) {
             encoder.setPersistenceDelegate(LocalDate.class, new LocalDatePersistenceDelegate());
             encoder.writeObject(listaAgendasDePagamento);
         } catch (IOException e) {
@@ -78,6 +80,9 @@ public class recursosHumanos {
             }
         } else {
             for (agendaDePagamento agenda : this.listaAgendasDePagamento) {
+                if (agenda.getV2() == null){
+                    continue;
+                }
                 if (agenda.getTipo().equals(tipo) && agenda.getV1().equals(v1) && agenda.getV2().equals(v2)) {
                     return agenda;
                 }
@@ -85,6 +90,56 @@ public class recursosHumanos {
         }
 
         return null;
+    }
+
+    public int conversaoStrParaInt(String str) throws DescricaoDeAgendaIncalidaException {
+        if (str == null || str.isEmpty()) {
+            throw new DescricaoDeAgendaIncalidaException();
+        }
+        try {
+            int res = Integer.parseInt(str);
+            return res;
+        } catch (NumberFormatException e) {
+            // Se ocorrer um erro, a string nao e um numero inteiro
+            throw new DescricaoDeAgendaIncalidaException();
+        }
+    }
+
+    public void criarAgendaDePagamento(String tipo, String v1, String v2) throws DescricaoDeAgendaIncalidaException {
+        agendaDePagamento nova;
+        if (tipo.equals("mensal")){
+            if (v2 != null){
+                throw new DescricaoDeAgendaIncalidaException();
+            }
+            int diaMes = conversaoStrParaInt(v1);
+            if (diaMes < 1 || diaMes > 28){
+                throw new DescricaoDeAgendaIncalidaException();
+            }
+            nova = new agendaDePagamento(tipo, v1, null);
+        } else if (tipo.equals("semanal")) {
+            int diaSemana;
+            int quantidadeSemnas;
+            if(v2 == null){
+                diaSemana = conversaoStrParaInt(v1);
+                if (diaSemana < 1 || diaSemana > 7){
+                    throw new DescricaoDeAgendaIncalidaException();
+                }
+                nova = new agendaDePagamento(tipo, v1, null);
+            }else {
+                quantidadeSemnas = conversaoStrParaInt(v1);
+                diaSemana = conversaoStrParaInt(v2);
+                if (quantidadeSemnas < 1 || quantidadeSemnas > 52){
+                    throw new DescricaoDeAgendaIncalidaException();
+                }
+                if (diaSemana < 1 || diaSemana > 7){
+                    throw new DescricaoDeAgendaIncalidaException();
+                }
+                nova = new agendaDePagamento(tipo, v1, v2);
+            }
+        }else {
+            throw new DescricaoDeAgendaIncalidaException();
+        }
+        this.listaAgendasDePagamento.add(nova);
     }
 
     public BigDecimal totalFolha(LocalDate data, ArrayList<empregado> listaEmpregados, ArrayList<menbroSindicato> listaMembrosSindicato) {
@@ -208,7 +263,9 @@ public class recursosHumanos {
             if (empAss.getAgendaPagamento().getV2() == null) {
                 salarioBruto = salarioSemana;
             } else {
-                salarioBruto = salarioSemana.multiply(new BigDecimal(Integer.parseInt(empAss.getAgendaPagamento().getV1())));
+                String numeradorQuanSemanas = String.format("%d", (12*Integer.parseInt(empAss.getAgendaPagamento().getV1())));
+                //System.out.println("AQUIIIIIIIIIIIIIIIIIIIII " + (12*Integer.parseInt(empCom.getAgendaPagamento().getV1())));
+                salarioBruto = salarioBig.multiply(new BigDecimal(numeradorQuanSemanas)).divide(new BigDecimal("52"), 2, RoundingMode.DOWN);
             }
         }
 

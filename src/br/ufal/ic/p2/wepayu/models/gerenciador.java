@@ -674,15 +674,42 @@ public class gerenciador {
         rh.rodarFolhaNovo(nomeArquivo, data, banco.getListaEmpregados(), sindicato.getListaMebrosSindicatos());
     }
 
+    public void criarAgendarDePagamento(String agendaPagamentoStr) throws DescricaoDeAgendaIncalidaException, AgendaDePagamentoNaoDisponivelException, AgendaJaExisteException {
+        String[] palavras = agendaPagamentoStr.split(" ");
+        agendaDePagamento cont;
+
+        if (palavras.length < 2 || palavras.length > 3){
+            throw new DescricaoDeAgendaIncalidaException();
+        }
+
+        if (palavras.length == 2){
+            cont = rh.verificarSeAgendaPagamentoExiste(palavras[0], palavras[1], null);
+        }else {
+            cont = rh.verificarSeAgendaPagamentoExiste(palavras[0], palavras[1], palavras[2]);
+        }
+
+        if (cont != null){
+            throw new AgendaJaExisteException();
+        }
+
+        if (palavras.length == 2){
+            rh.criarAgendaDePagamento(palavras[0], palavras[1], null);
+        }else {
+            rh.criarAgendaDePagamento(palavras[0], palavras[1], palavras[2]);
+        }
+    }
+
     public void zerarSistema() {
         criar_undo();
         banco.zerarSistema();
         sindicato.zerarSistema();
+        rh.zerarSistema();
     }
 
     public void encerrarSistema() {
         banco.encerrarSistema();
         sindicato.encerrarSistema();
+        rh.encerrarSistema();
         pilha_undo.clear();
         pilha_redo.clear();
         estadoSistema = false;

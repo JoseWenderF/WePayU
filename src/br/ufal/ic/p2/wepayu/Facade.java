@@ -87,6 +87,10 @@ public class Facade {
         gerente.rodarFolha(nomeArquivo, data);
     }
 
+    public void criarAgendaDePagamentos(String agenda) throws AgendaDePagamentoNaoDisponivelException, DescricaoDeAgendaIncalidaException, AgendaJaExisteException {
+        gerente.criarAgendarDePagamento(agenda);
+    }
+
     public void zerarSistema(){
         gerente.zerarSistema();
     }

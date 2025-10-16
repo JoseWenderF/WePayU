@@ -9,10 +9,10 @@
     <void property="agendaPagamento">
      <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
       <void property="tipo">
-       <string>semanal</string>
+       <string>mensal</string>
       </void>
       <void property="v1">
-       <string>5</string>
+       <string>1</string>
       </void>
      </object>
     </void>

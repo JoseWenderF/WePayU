@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="21.0.8" class="java.beans.XMLDecoder">
+ <object class="java.util.ArrayList">
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
+    <void property="tipo">
+     <string>mensal</string>
+    </void>
+    <void property="v1">
+     <string>$</string>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
+    <void property="tipo">
+     <string>semanal</string>
+    </void>
+    <void property="v1">
+     <string>2</string>
+    </void>
+    <void property="v2">
+     <string>5</string>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
+    <void property="tipo">
+     <string>semanal</string>
+    </void>
+    <void property="v1">
+     <string>5</string>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
+    <void property="tipo">
+     <string>mensal</string>
+    </void>
+    <void property="v1">
+     <string>1</string>
+    </void>
+   </object>
+  </void>
+  <void method="add">
+   <object class="br.ufal.ic.p2.wepayu.models.agendaDePagamento">
+    <void property="tipo">
+     <string>semanal</string>
+    </void>
+    <void property="v1">
+     <string>2</string>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>
